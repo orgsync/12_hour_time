@@ -1,22 +1,14 @@
-require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
+require "bundler"
+Bundler.setup
 
-desc 'Default: run unit tests.'
-task :default => :test
+require "rspec/core/rake_task"
+Rspec::Core::RakeTask.new(:spec)
 
-desc 'Test the 12_hour_time plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
+gemspec = eval(File.read("12_hour_time.gemspec"))
 
-desc 'Generate documentation for the 12_hour_time plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = '12-Hour Time'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+task :build => "#{gemspec.full_name}.gem"
+
+file "#{gemspec.full_name}.gem" => gemspec.files + ["12_hour_time.gemspec"] do
+  system "gem build 12_hour_time.gemspec"
+  system "gem install 12_hour_time-#{TwelveHourTime::VERSION}.gem"
 end
