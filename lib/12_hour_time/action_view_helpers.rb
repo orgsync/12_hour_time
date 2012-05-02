@@ -1,8 +1,12 @@
 module ActionView::Helpers
   class DateTimeSelector
-    POSITION = { :year => 1, :month => 2, :day => 3, :hour => 4, :minute => 5, :second => 6, :ampm => 7 }
-    # XXX would like to do this, but it's frozen
-    # POSITION[:ampm] = 7
+    # The functionality of the gem relies on overwriting the value of
+    # POSITION, which will lead to a warning whenever loaded.
+    silence_warnings do
+      POSITION = POSITION.dup.tap do |p|
+        p[:ampm] = 7
+      end
+    end
 
     # We give them negative values so can differentiate between normal
     # date/time values. The way the multi param stuff works, from what I
